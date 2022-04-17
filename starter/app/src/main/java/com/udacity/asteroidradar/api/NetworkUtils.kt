@@ -1,11 +1,10 @@
 package com.udacity.asteroidradar.api
 
-import com.udacity.asteroidradar.Asteroid
+import com.udacity.asteroidradar.domain.Asteroid
 import com.udacity.asteroidradar.Constants
 import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.ArrayList
 
 fun parseAsteroidsJsonResult(jsonResult: JSONObject): ArrayList<Asteroid> {
     val nearEarthObjectsJson = jsonResult.getJSONObject("near_earth_objects")
@@ -23,7 +22,6 @@ fun parseAsteroidsJsonResult(jsonResult: JSONObject): ArrayList<Asteroid> {
             val absoluteMagnitude = asteroidJson.getDouble("absolute_magnitude_h")
             val estimatedDiameter = asteroidJson.getJSONObject("estimated_diameter")
                 .getJSONObject("kilometers").getDouble("estimated_diameter_max")
-
             val closeApproachData = asteroidJson
                 .getJSONArray("close_approach_data").getJSONObject(0)
             val relativeVelocity = closeApproachData.getJSONObject("relative_velocity")
@@ -54,4 +52,26 @@ private fun getNextSevenDaysFormattedDates(): ArrayList<String> {
     }
 
     return formattedDateList
+}
+
+fun getTodayStringDate(): String {
+    val calendar = Calendar.getInstance()
+    return formatDate(calendar.time)
+}
+
+fun getComingWeekStringDate(): String {
+    val calender = Calendar.getInstance()
+    calender.add(Calendar.DAY_OF_YEAR, 7)
+    return formatDate(calender.time)
+}
+
+fun getTomorrowStringDate(): String {
+    val calender = Calendar.getInstance()
+    calender.add(Calendar.DAY_OF_YEAR, 1)
+    return formatDate(calender.time)
+}
+
+private fun formatDate(date: Date): String {
+    val dateFormat = SimpleDateFormat(Constants.API_QUERY_DATE_FORMAT, Locale.getDefault())
+    return dateFormat.format(date)
 }
