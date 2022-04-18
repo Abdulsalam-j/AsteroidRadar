@@ -20,8 +20,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val database = AsteroidsDatabase.getDatabase(application)
     private val repository = AsteroidsRepository(database)
 
-    private val _asteroids = MutableLiveData<List<Asteroid>>()
-    val asteroids: LiveData<List<Asteroid>> get() = _asteroids
+    /*private val _asteroids = MutableLiveData<List<Asteroid>>()
+    val asteroids: LiveData<List<Asteroid>> get() = _asteroids*/
 
     private val _pictureOfDayStatus = MutableLiveData<ApiStatus>()
     val pictureOfDayStatus: LiveData<ApiStatus> get() = _pictureOfDayStatus
@@ -36,8 +36,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     init {
         getAsteroids()
         getPictureOfDay()
-        showTodayAsteroids()
     }
+
+    val asteroids = repository.allAsteroids
 
     private fun getAsteroids(startDate: AsteroidApiFilter = AsteroidApiFilter.SHOW_TODAY) {
         viewModelScope.launch {
@@ -51,15 +52,14 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     fun showSavedAsteroids() {
         viewModelScope.launch {
-            _asteroids.value = repository.allAsteroids.value
-            Log.d("www", "sizeeeeeeeee issss ${_asteroids.value?.size}")
+
         }
     }
 
     fun showTodayAsteroids() {
         viewModelScope.launch {
             repository.getFilteredAsteroids(AsteroidApiFilter.SHOW_TODAY).value.let {
-                _asteroids.value = it
+                //_asteroids.value = it
             }
 
         }
@@ -68,7 +68,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 fun showWeekAsteroids() {
     viewModelScope.launch {
         database.asteroidDao.getSelectedDateAsteroids(AsteroidApiFilter.SHOW_WEEK.value).apply {
-            _asteroids.value = this.value?.asDomainModel()
+            //_asteroids.value = this.value?.asDomainModel()
         }
     }
 }
