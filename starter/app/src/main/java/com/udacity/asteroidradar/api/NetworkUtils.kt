@@ -2,6 +2,7 @@ package com.udacity.asteroidradar.api
 
 import com.udacity.asteroidradar.domain.Asteroid
 import com.udacity.asteroidradar.Constants
+import com.udacity.asteroidradar.database.AsteroidRoomDatabase
 import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.*
@@ -65,13 +66,21 @@ fun getComingWeekStringDate(): String {
     return formatDate(calender.time)
 }
 
-fun getTomorrowStringDate(): String {
-    val calender = Calendar.getInstance()
-    calender.add(Calendar.DAY_OF_YEAR, 1)
-    return formatDate(calender.time)
-}
-
 private fun formatDate(date: Date): String {
     val dateFormat = SimpleDateFormat(Constants.API_QUERY_DATE_FORMAT, Locale.getDefault())
     return dateFormat.format(date)
+}
+
+fun ArrayList<Asteroid>.asDatabaseModel(): Array<AsteroidRoomDatabase> {
+    return map {
+        AsteroidRoomDatabase (
+            id = it.id,
+            codename = it.codename,
+            closeApproachDate = it.closeApproachDate,
+            absoluteMagnitude = it.absoluteMagnitude,
+            estimatedDiameter = it.estimatedDiameter,
+            relativeVelocity = it.relativeVelocity,
+            distanceFromEarth = it.distanceFromEarth,
+            isPotentiallyHazardous = it.isPotentiallyHazardous)
+    }.toTypedArray()
 }

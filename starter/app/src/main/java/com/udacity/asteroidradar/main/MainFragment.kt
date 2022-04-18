@@ -8,11 +8,14 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.udacity.asteroidradar.R
 import com.udacity.asteroidradar.databinding.FragmentMainBinding
+import com.udacity.asteroidradar.util.bindRecyclerView
 
 class MainFragment : Fragment() {
 
     private val viewModel: MainViewModel by lazy {
-        ViewModelProvider(this)[MainViewModel::class.java]
+        val activity = requireNotNull(this.activity)
+        ViewModelProvider(this,
+            ViewModelFactory(activity.application))[MainViewModel::class.java]
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -33,16 +36,7 @@ class MainFragment : Fragment() {
             }
         }
 
-        viewModel.asteroids.observe(viewLifecycleOwner) {
-            Log.v("MainFragment", "$it ${viewModel.asteroidStatus.value.toString()} ")
-        }
-
-        viewModel.pictureOfDayStatus.observe(viewLifecycleOwner) {
-
-        }
-
         viewModel.pictureOfDay.observe(viewLifecycleOwner) {
-            Log.v("MainFragment", "Image URL is ${viewModel.pictureOfDay.value?.url}")
             binding.pictureOfDay = it
         }
 
@@ -57,6 +51,11 @@ class MainFragment : Fragment() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId) {
+            R.id.show_all_menu -> viewModel.showWeekAsteroids()
+            R.id.show_today_menu -> viewModel.showTodayAsteroids()
+            R.id.show_saved_menu -> viewModel.showSavedAsteroids()
+        }
         return true
     }
 }
