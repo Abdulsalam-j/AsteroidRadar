@@ -23,13 +23,14 @@ private val retrofit = Retrofit.Builder()
 
 enum class AsteroidApiFilter(val value: String) {
     SHOW_TODAY(getTodayStringDate()),
-    SHOW_WEEK(getComingWeekStringDate()),
+    SHOW_WEEK(getComingWeekStringDate())
 }
 
 interface ApiService {
     @GET("neo/rest/v1/feed")
     suspend fun getAsteroids(
         @Query("start_date") startDate: String,
+        @Query("end_date") endDate: String,
         @Query("api_key") apikey: String = Constants.API_KEY
     ): ResponseBody
 

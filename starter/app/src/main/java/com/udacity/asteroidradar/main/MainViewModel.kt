@@ -20,8 +20,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val database = AsteroidsDatabase.getDatabase(application)
     private val repository = AsteroidsRepository(database)
 
-    /*private val _asteroids = MutableLiveData<List<Asteroid>>()
-    val asteroids: LiveData<List<Asteroid>> get() = _asteroids*/
+    val asteroids = repository.allAsteroids as MutableLiveData<List<Asteroid>>
 
     private val _pictureOfDayStatus = MutableLiveData<ApiStatus>()
     val pictureOfDayStatus: LiveData<ApiStatus> get() = _pictureOfDayStatus
@@ -38,12 +37,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         getPictureOfDay()
     }
 
-    val asteroids = repository.allAsteroids
-
-    private fun getAsteroids(startDate: AsteroidApiFilter = AsteroidApiFilter.SHOW_TODAY) {
+    private fun getAsteroids() {
         viewModelScope.launch {
             try {
-                repository.refreshList(startDate)
+                repository.refreshList(AsteroidApiFilter.SHOW_TODAY, AsteroidApiFilter.SHOW_WEEK)
             } catch (e: Exception) {
                 Log.e("MainViewModel", e.toString())
             }
@@ -52,57 +49,57 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     fun showSavedAsteroids() {
         viewModelScope.launch {
-
+            asteroids.value = database.asteroidDao
+                .getSavedAsteroids().asDomainModel()
         }
     }
 
     fun showTodayAsteroids() {
         viewModelScope.launch {
-            repository.getFilteredAsteroids(AsteroidApiFilter.SHOW_TODAY).value.let {
-                //_asteroids.value = it
+            asteroids.value = database.asteroidDao
+                .getSelectedDateAsteroids(AsteroidApiFilter.SHOW_TODAY.value,
+                    AsteroidApiFilter.SHOW_TODAY.value).asDomainModel()
+            Log.d("asteroids size:", "${asteroids.value?.size}")
+        }
+    }
+
+    fun showWeekAsteroids() {
+        viewModelScope.launch {
+            asteroids.value = database.asteroidDao
+                .getSelectedDateAsteroids(AsteroidApiFilter.SHOW_TODAY.value,
+                    AsteroidApiFilter.SHOW_WEEK.value).asDomainModel()
+        }
+    }
+
+    fun displayAsteroidDetails(asteroid: Asteroid) {
+        _navigateToSelectedAsteroid.value = asteroid
+    }
+
+    fun displayAsteroidDetailsComplete() {
+        _navigateToSelectedAsteroid.value = null
+    }
+
+    private fun getPictureOfDay() {
+        viewModelScope.launch {
+            try {
+                val pictureOfDay = Network.retrofitService.getImageOfTheDay()
+                _pictureOfDayStatus.value = ApiStatus.LOADING
+
+                if (pictureOfDay.mediaType.isNotEmpty()) {
+                    if (pictureOfDay.mediaType == "image") {
+                        _pictureOfDay.value = pictureOfDay
+                    } else
+                        _pictureOfDay.value = PictureOfDay(
+                            "image",
+                            Constants.DEFAULT_IMAGE_TITLE,
+                            Constants.DEFAULT_IMAGE_URL
+                        )
+                    _pictureOfDayStatus.value = ApiStatus.DONE
+                }
+            } catch (e: Exception) {
+                _pictureOfDayStatus.value = ApiStatus.ERROR
+                Log.e("MainViewModel", e.toString())
             }
-
         }
     }
-
-fun showWeekAsteroids() {
-    viewModelScope.launch {
-        database.asteroidDao.getSelectedDateAsteroids(AsteroidApiFilter.SHOW_WEEK.value).apply {
-            //_asteroids.value = this.value?.asDomainModel()
-        }
-    }
-}
-
-
-private fun getPictureOfDay() {
-    viewModelScope.launch {
-        try {
-            val pictureOfDay = Network.retrofitService.getImageOfTheDay()
-            _pictureOfDayStatus.value = ApiStatus.LOADING
-
-            if (pictureOfDay.mediaType.isNotEmpty()) {
-                if (pictureOfDay.mediaType == "image") {
-                    _pictureOfDay.value = pictureOfDay
-                } else
-                    _pictureOfDay.value = PictureOfDay(
-                        "image",
-                        Constants.DEFAULT_IMAGE_TITLE,
-                        Constants.DEFAULT_IMAGE_URL
-                    )
-                _pictureOfDayStatus.value = ApiStatus.DONE
-            }
-        } catch (e: Exception) {
-            _pictureOfDayStatus.value = ApiStatus.ERROR
-            Log.e("MainViewModel", e.toString())
-        }
-    }
-}
-
-fun displayAsteroidDetails(asteroid: Asteroid) {
-    _navigateToSelectedAsteroid.value = asteroid
-}
-
-fun displayAsteroidDetailsComplete() {
-    _navigateToSelectedAsteroid.value = null
-}
 }

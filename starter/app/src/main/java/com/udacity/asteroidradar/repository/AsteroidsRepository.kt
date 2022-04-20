@@ -20,18 +20,10 @@ class AsteroidsRepository(private val database: AsteroidsDatabase) {
             it.asDomainModel()
         }
 
-    fun getFilteredAsteroids(endDate: AsteroidApiFilter): LiveData<List<Asteroid>> {
-        return Transformations.map(
-            database.asteroidDao.getSelectedDateAsteroids(endDate.value)
-        ) {
-            it.asDomainModel()
-        }
-    }
-
-    suspend fun refreshList(startDate: AsteroidApiFilter) {
+    suspend fun refreshList(startDate: AsteroidApiFilter, endDate: AsteroidApiFilter) {
         withContext(Dispatchers.IO) {
             val asteroidList: ArrayList<Asteroid>
-            val asteroidResponseBody = Network.retrofitService.getAsteroids(startDate.value)
+            val asteroidResponseBody = Network.retrofitService.getAsteroids(startDate.value, endDate.value)
             val responseBodyString = asteroidResponseBody.string()
             asteroidList = parseAsteroidsJsonResult(JSONObject(responseBodyString))
             database.asteroidDao.insertAll(*asteroidList.asDatabaseModel())
