@@ -2,10 +2,7 @@ package com.udacity.asteroidradar.repository
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
-import com.udacity.asteroidradar.api.AsteroidApiFilter
-import com.udacity.asteroidradar.api.Network
-import com.udacity.asteroidradar.api.asDatabaseModel
-import com.udacity.asteroidradar.api.parseAsteroidsJsonResult
+import com.udacity.asteroidradar.api.*
 import com.udacity.asteroidradar.database.AsteroidsDatabase
 import com.udacity.asteroidradar.database.asDomainModel
 import com.udacity.asteroidradar.domain.Asteroid
@@ -20,7 +17,7 @@ class AsteroidsRepository(private val database: AsteroidsDatabase) {
             it.asDomainModel()
         }
 
-    suspend fun refreshList(startDate: AsteroidApiFilter, endDate: AsteroidApiFilter) {
+    suspend fun refreshList(startDate: AsteroidApiFilter = AsteroidApiFilter.TODAY_DATE, endDate: AsteroidApiFilter = AsteroidApiFilter.NEXT_WEEK_DATE) {
         withContext(Dispatchers.IO) {
             val asteroidList: ArrayList<Asteroid>
             val asteroidResponseBody = Network.retrofitService.getAsteroids(startDate.value, endDate.value)

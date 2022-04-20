@@ -22,8 +22,8 @@ private val retrofit = Retrofit.Builder()
     .build()
 
 enum class AsteroidApiFilter(val value: String) {
-    SHOW_TODAY(getTodayStringDate()),
-    SHOW_WEEK(getComingWeekStringDate())
+    TODAY_DATE(getTodayStringDate()),
+    NEXT_WEEK_DATE(getComingWeekStringDate())
 }
 
 interface ApiService {

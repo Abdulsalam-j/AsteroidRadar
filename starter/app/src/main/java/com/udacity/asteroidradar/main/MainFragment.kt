@@ -1,14 +1,12 @@
 package com.udacity.asteroidradar.main
 
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.udacity.asteroidradar.R
 import com.udacity.asteroidradar.databinding.FragmentMainBinding
-import com.udacity.asteroidradar.util.bindRecyclerView
 
 class MainFragment : Fragment() {
 
@@ -28,10 +26,6 @@ class MainFragment : Fragment() {
         binding.asteroidRecycler.adapter = AsteroidListAdapter(OnClickListener {
             viewModel.displayAsteroidDetails(it)
         })
-
-        viewModel.asteroids.observe(viewLifecycleOwner) {
-            
-        }
 
         viewModel.navigateToSelectedAsteroid.observe(viewLifecycleOwner) {
             if (null != it) {

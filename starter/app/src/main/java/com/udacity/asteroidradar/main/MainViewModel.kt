@@ -40,7 +40,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private fun getAsteroids() {
         viewModelScope.launch {
             try {
-                repository.refreshList(AsteroidApiFilter.SHOW_TODAY, AsteroidApiFilter.SHOW_WEEK)
+                repository.refreshList(AsteroidApiFilter.TODAY_DATE, AsteroidApiFilter.NEXT_WEEK_DATE)
             } catch (e: Exception) {
                 Log.e("MainViewModel", e.toString())
             }
@@ -57,8 +57,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     fun showTodayAsteroids() {
         viewModelScope.launch {
             asteroids.value = database.asteroidDao
-                .getSelectedDateAsteroids(AsteroidApiFilter.SHOW_TODAY.value,
-                    AsteroidApiFilter.SHOW_TODAY.value).asDomainModel()
+                .getSelectedDateAsteroids(AsteroidApiFilter.TODAY_DATE.value,
+                    AsteroidApiFilter.TODAY_DATE.value).asDomainModel()
             Log.d("asteroids size:", "${asteroids.value?.size}")
         }
     }
@@ -66,8 +66,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     fun showWeekAsteroids() {
         viewModelScope.launch {
             asteroids.value = database.asteroidDao
-                .getSelectedDateAsteroids(AsteroidApiFilter.SHOW_TODAY.value,
-                    AsteroidApiFilter.SHOW_WEEK.value).asDomainModel()
+                .getSelectedDateAsteroids(AsteroidApiFilter.TODAY_DATE.value,
+                    AsteroidApiFilter.NEXT_WEEK_DATE.value).asDomainModel()
         }
     }
 
