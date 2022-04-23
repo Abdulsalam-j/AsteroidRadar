@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="network_indicator_padding">18dp</dimen>
-    <dimen name="list_item_text_padding">8dp</dimen>
+    <dimen name="network_indicator_padding">16dp</dimen>
     <dimen name="list_item_image_padding">8dp</dimen>
-    <dimen name="list_item_text_bottom_padding">4dp</dimen>
-    <dimen name="list_item_padding">16dp</dimen>
-    <dimen name="recycler_bottom_padding">8dp</dimen>
+    <dimen name="list_item_text_top_padding">4dp</dimen>
+    <dimen name="recycler_padding">8dp</dimen>
+    <dimen name="recycler_padding_start">12dp</dimen>
+    <dimen name="list_item_upper_text_bottom_padding">4dp</dimen>
+    <dimen name="list_item_padding">8dp</dimen>
+    <dimen name="list_item_top_padding">12dp</dimen>
+    <dimen name="list_item_bottom_padding">12dp</dimen>
 </resources>

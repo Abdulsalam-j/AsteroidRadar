@@ -2,12 +2,14 @@ package com.udacity.asteroidradar.main
 
 import android.app.Application
 import android.util.Log
-import androidx.lifecycle.*
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.udacity.asteroidradar.Constants
 import com.udacity.asteroidradar.api.AsteroidApiFilter
 import com.udacity.asteroidradar.api.Network
 import com.udacity.asteroidradar.database.AsteroidsDatabase
-import com.udacity.asteroidradar.database.asDomainModel
 import com.udacity.asteroidradar.domain.Asteroid
 import com.udacity.asteroidradar.domain.PictureOfDay
 import com.udacity.asteroidradar.repository.AsteroidsRepository
@@ -42,6 +44,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             try {
                 repository.refreshList(AsteroidApiFilter.TODAY_DATE, AsteroidApiFilter.NEXT_WEEK_DATE)
             } catch (e: Exception) {
+                ApiStatus.ERROR
                 Log.e("MainViewModel", e.toString())
             }
         }
@@ -49,25 +52,19 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     fun showSavedAsteroids() {
         viewModelScope.launch {
-            asteroids.value = database.asteroidDao
-                .getSavedAsteroids().asDomainModel()
+            asteroids.value = repository.queryAllAsteroids()
         }
     }
 
     fun showTodayAsteroids() {
         viewModelScope.launch {
-            asteroids.value = database.asteroidDao
-                .getSelectedDateAsteroids(AsteroidApiFilter.TODAY_DATE.value,
-                    AsteroidApiFilter.TODAY_DATE.value).asDomainModel()
-            Log.d("asteroids size:", "${asteroids.value?.size}")
+            asteroids.value = repository.queryTodayAsteroids()
         }
     }
 
     fun showWeekAsteroids() {
         viewModelScope.launch {
-            asteroids.value = database.asteroidDao
-                .getSelectedDateAsteroids(AsteroidApiFilter.TODAY_DATE.value,
-                    AsteroidApiFilter.NEXT_WEEK_DATE.value).asDomainModel()
+            asteroids.value = repository.queryWeekAsteroids()
         }
     }
 

@@ -3,6 +3,7 @@ package com.udacity.asteroidradar.work
 import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import com.udacity.asteroidradar.api.AsteroidApiFilter
 import com.udacity.asteroidradar.database.AsteroidsDatabase.Companion.getDatabase
 import com.udacity.asteroidradar.repository.AsteroidsRepository
 import retrofit2.HttpException
@@ -19,6 +20,7 @@ class RefreshDataWorker (context: Context, params: WorkerParameters):
         val repository = AsteroidsRepository(database)
         return try {
             repository.refreshList()
+            repository.deleteLastDayAsteroid(AsteroidApiFilter.TODAY_DATE.value)
             Result.success()
         }catch (e: HttpException) {
             Result.retry()

@@ -1,5 +1,6 @@
 package com.udacity.asteroidradar.util
 
+import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.net.toUri
@@ -15,8 +16,13 @@ import com.udacity.asteroidradar.main.AsteroidListAdapter
 fun bindAsteroidStatusImage(imageView: ImageView, isHazardous: Boolean) {
     if (isHazardous) {
         imageView.setImageResource(R.drawable.ic_status_potentially_hazardous)
+        imageView.contentDescription = imageView.resources
+            .getString(R.string.potentially_hazardous_asteroid_indicator_icon)
+
     } else {
         imageView.setImageResource(R.drawable.ic_status_normal)
+        imageView.contentDescription = imageView.resources
+            .getString(R.string.not_hazardous_asteroid_indicator_icon)
     }
 }
 
@@ -24,8 +30,12 @@ fun bindAsteroidStatusImage(imageView: ImageView, isHazardous: Boolean) {
 fun bindDetailsStatusImage(imageView: ImageView, isHazardous: Boolean) {
     if (isHazardous) {
         imageView.setImageResource(R.drawable.asteroid_hazardous)
+        imageView.contentDescription = imageView.resources
+            .getString(R.string.potentially_hazardous_asteroid_image)
     } else {
         imageView.setImageResource(R.drawable.asteroid_safe)
+        imageView.contentDescription = imageView.resources
+            .getString(R.string.not_hazardous_asteroid_image)
     }
 }
 
@@ -33,7 +43,6 @@ fun bindDetailsStatusImage(imageView: ImageView, isHazardous: Boolean) {
 fun bindRecyclerView(recyclerView: RecyclerView, data: List<Asteroid>?) {
     val adapter = recyclerView.adapter as AsteroidListAdapter
     adapter.submitList(data) {
-        // scroll the list to the top after the diffs are calculated and posted
         recyclerView.scrollToPosition(0)
     }
 }
@@ -83,4 +92,9 @@ fun bindStatus(statusImageView: ImageView, status: ApiStatus?) {
             statusImageView.visibility = ImageView.GONE
         }
     }
+}
+
+@BindingAdapter("goneIfNotNull")
+fun goneIfNotNull(view: View, it: Any?) {
+    view.visibility = if (it != null) View.GONE else View.VISIBLE
 }
